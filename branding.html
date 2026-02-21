@@ -1,0 +1,29 @@
+# BizForge Backend Dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Web Framework ──────────────────────────────────────────────────────────────
+fastapi==0.109.2
+uvicorn==0.27.1
+
+# ── Data Validation ────────────────────────────────────────────────────────────
+pydantic==2.6.1
+
+# ── AI / LLM ──────────────────────────────────────────────────────────────────
+# Pinned for stability — covers Groq LLaMA text + Whisper audio transcription
+groq>=0.11.0
+
+# ── HuggingFace (SDXL logo generation via Inference API) ──────────────────────
+huggingface-hub==0.20.3
+requests==2.31.0
+
+# ── Environment & Config ───────────────────────────────────────────────────────
+python-dotenv==1.0.1
+
+# ── File Uploads (REQUIRED for UploadFile / File() in FastAPI) ────────────────
+python-multipart==0.0.9
+soundfile>=0.12.1
+httpx==0.27.2
+# For IBM Granite local/remote trust execution if running directly, 
+# though we'll likely use HF API for lightweight deployment
+#transformers==4.37.2 
+#torch==2.2.0

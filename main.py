@@ -1,0 +1,5 @@
+GROQ_API_KEY=
+HF_API_KEY=
+
+ENVIRONMENT=development
+PORT=3000

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace | BizForge</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .workspace { display: flex; height: calc(100vh - 70px); }
+        .sidebar { width: 280px; background: var(--bg-secondary); overflow-y: auto; padding: 1rem 0; border-right: 1px solid var(--card-border); }
+        .tab-link { display: block; padding: 1rem 1.5rem; color: var(--text-primary); cursor: pointer; border-left: 4px solid transparent; transition: all 0.2s; font-size: 0.95rem; }
+        .tab-link:hover { background: rgba(0,0,0,0.05); }
+        .tab-link.active { border-left-color: var(--text-primary); font-weight: 600; background: var(--card-bg); }
+        .main-stage { flex: 1; overflow-y: auto; padding: 3rem; background: var(--bg-primary); }
+        .tab-content { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        
+        .stage-section { background: var(--card-bg); padding: 2rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid var(--card-border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stage-label { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--bg-secondary); padding-bottom: 0.5rem; }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 0.8rem; border: 1px solid var(--card-border); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', sans-serif; }
+        
+        .production-stage { text-align: center; background: transparent; border: none; box-shadow: none; }
+        .generate-btn { font-size: 1.2rem; padding: 1rem 3rem; width: 100%; max-width: 300px; }
+        
+        .output-box { min-height: 150px; padding: 1.5rem; border: 1px solid var(--card-border); border-radius: 4px; background: var(--bg-primary); white-space: pre-wrap; margin-bottom: 1rem; outline: none; }
+        .action-bar { display: flex; gap: 1rem; justify-content: flex-end; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; transition: transform 0.2s; }
+        .btn-secondary:hover { transform: translateY(-2px); }
+        
+        .loader { display: none; font-size: 2rem; animation: spin 2s linear infinite; margin: 1rem auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--text-primary); color: var(--bg-primary); text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Biz<span>Forge</span></a>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="theme-btn">🌓</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="workspace">
+        <aside class="sidebar" id="tool-sidebar">
+            <div class="tab-link active" data-target="tab1">🏷️ Brand Names</div>
+            <div class="tab-link" data-target="tab2">🎨 Logo Generator</div>
+            <div class="tab-link" data-target="tab3">📝 Marketing Content</div>
+            <div class="tab-link" data-target="tab4">✨ Design System</div>
+            <div class="tab-link" data-target="tab5">📊 Review Analyzer</div>
+            <div class="tab-link" data-target="tab6">💬 AI Chatbot</div>
+            <div class="tab-link" data-target="tab7">⚡ Taglines & Slogans</div>
+            <div class="tab-link" data-target="tab8">📖 Brand Story</div>
+            <div class="tab-link" data-target="tab9">📱 Social Media Posts</div>
+            <div class="tab-link" data-target="tab10">✉️ Email Templates</div>
+            <div class="tab-link" data-target="tab11">🛍️ Product Descriptions</div>
+            <div class="tab-link" data-target="tab12">🎯 Mission & Vision</div>
+            <div class="tab-link" data-target="tab13">👥 Audience Personas</div>
+            <div class="tab-link" data-target="tab14">📢 Ad Copy Generator</div>
+            <div class="tab-link" data-target="tab15">#️⃣ Hashtag Generator</div>
+            <div class="tab-link" data-target="tab16">📰 Press Releases</div>
+            <div class="tab-link" data-target="tab17">🔍 SEO Metadata</div>
+            <div class="tab-link" data-target="tab18">❓ FAQ Generator</div>
+            <div class="tab-link" data-target="tab19">💼 Brand Pitch</div>
+            <div class="tab-link" data-target="tab20">📑 Text Summarizer</div>
+            <div class="tab-link" data-target="tab21">🎙️ Voice Input</div>
+            <div class="tab-link" data-target="tab22">⚖️ Consistency Checker</div>
+            <div class="tab-link" data-target="tab23">📇 Business Cards</div>
+            <div class="tab-link" data-target="tab24">🌐 Domain Check</div>
+        </aside>
+
+        <main class="main-stage">
+            
+            <div id="tab1" class="tab-content active">
+                <h2 class="section-title" style="margin-top:0;">Brand Name Generator</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Industry</label><input type="text" id="t1-industry" placeholder="e.g., Tech Startup"></div>
+                    <div class="input-group"><label>Keywords</label><input type="text" id="t1-keywords" placeholder="e.g., fast, modern"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t1-tone" placeholder="e.g., Playful"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-brand', 'tab1')">Generate 🎬</button>
+                    <div id="t1-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t1-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t1-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab2" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">SDXL Logo Generator</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t2-name" placeholder="Brand Name"></div>
+                    <div class="input-group"><label>Industry</label><input type="text" id="t2-industry" placeholder="Industry"></div>
+                    <div class="input-group"><label>Keywords</label><input type="text" id="t2-keywords" placeholder="e.g., tree, geometric"></div>
+                    <div class="input-group"><label>Style</label><input type="text" id="t2-style" placeholder="e.g., Minimalist Vector"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateLogo()">Render Logo 🎨</button>
+                    <div id="t2-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div style="text-align: center;"><img id="t2-image-output" src="" style="max-width: 100%; border-radius: 8px; display: none;"></div>
+                    <div id="t2-prompt-output" class="output-box" contenteditable="true" style="font-size: 0.8rem; margin-top:1rem;">SDXL Prompt...</div>
+                    <div class="action-bar"><a id="t2-download-btn" class="btn-secondary" href="#" download="logo.png" style="display:none;">⬇️ Download PNG</a></div>
+                </div>
+            </div>
+
+            <div id="tab3" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Marketing Content</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Brand Description</label><textarea id="t3-desc" rows="2"></textarea></div>
+                    <div class="input-group"><label>Content Type</label><input type="text" id="t3-type" placeholder="e.g., Landing Page Hero"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t3-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-content', 'tab3')">Draft Content 📝</button>
+                    <div id="t3-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t3-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t3-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab4" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Design System</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Industry</label><input type="text" id="t4-industry"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t4-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/get-colors', 'tab4')">Get Colors ✨</button>
+                    <div id="t4-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t4-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t4-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab5" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Review Analyzer</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Review Text</label><textarea id="t5-review" rows="3"></textarea></div>
+                    <div class="input-group"><label>Brand Tone Reference</label><input type="text" id="t5-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/analyze-sentiment', 'tab5')">Analyze 📊</button>
+                    <div id="t5-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t5-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t5-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab6" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">AI Branding Chatbot</h2>
+                <div class="stage-section production-stage" style="background: var(--card-bg); border: 1px solid var(--card-border); padding: 1rem;">
+                    <div id="chat-history" style="height: 300px; overflow-y: auto; text-align: left; margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 4px;">
+                        <div style="margin-bottom: 1rem;"><strong>🤖 BizForge AI:</strong> Hello Director! How can I help?</div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1; padding: 0.8rem; border-radius: 4px; border: 1px solid var(--card-border);">
+                        <button class="btn-primary" onclick="sendMessage()" style="padding: 0.8rem 1.5rem;">Send</button>
+                    </div>
+                    <div id="t6-loader" class="loader" style="font-size: 1rem;">🎞️ Thinking...</div>
+                </div>
+            </div>
+
+            <div id="tab7" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Taglines & Slogans</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t7-name"></div>
+                    <div class="input-group"><label>Industry</label><input type="text" id="t7-industry"></div>
+                    <div class="input-group"><label>Core Value</label><input type="text" id="t7-value"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t7-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-tagline', 'tab7')">Generate ⚡</button>
+                    <div id="t7-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t7-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t7-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab8" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Brand Story</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Founder Name</label><input type="text" id="t8-founder"></div>
+                    <div class="input-group"><label>Business Type</label><input type="text" id="t8-type"></div>
+                    <div class="input-group"><label>Mission</label><textarea id="t8-mission" rows="2"></textarea></div>
+                    <div class="input-group"><label>Target Audience</label><input type="text" id="t8-audience"></div>
+                    <div class="input-group"><label>Year Founded</label><input type="text" id="t8-year"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-brand-story', 'tab8')">Generate 📖</button>
+                    <div id="t8-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t8-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t8-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab9" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Social Media Posts</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Brand Description</label><textarea id="t9-desc" rows="2"></textarea></div>
+                    <div class="input-group"><label>Platform</label><input type="text" id="t9-platform" placeholder="e.g., LinkedIn, Instagram"></div>
+                    <div class="input-group"><label>Topic</label><input type="text" id="t9-topic"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t9-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-social', 'tab9')">Draft Post 📱</button>
+                    <div id="t9-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t9-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t9-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab10" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Email Templates</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Email Type</label><input type="text" id="t10-type" placeholder="e.g., Welcome, Cold Outreach"></div>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t10-name"></div>
+                    <div class="input-group"><label>Key Message</label><textarea id="t10-message" rows="2"></textarea></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t10-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-email', 'tab10')">Write Email ✉️</button>
+                    <div id="t10-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t10-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t10-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab11" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Product Descriptions</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Product Name</label><input type="text" id="t11-name"></div>
+                    <div class="input-group"><label>Key Features</label><textarea id="t11-features" rows="2"></textarea></div>
+                    <div class="input-group"><label>Target Customer</label><input type="text" id="t11-customer"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t11-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-product', 'tab11')">Describe 🛍️</button>
+                    <div id="t11-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t11-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t11-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab12" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Mission & Vision</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Industry</label><input type="text" id="t12-industry"></div>
+                    <div class="input-group"><label>Core Values</label><input type="text" id="t12-values"></div>
+                    <div class="input-group"><label>Target Audience</label><input type="text" id="t12-audience"></div>
+                    <div class="input-group"><label>Impact Goal</label><input type="text" id="t12-goal"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-mission', 'tab12')">Define Goal 🎯</button>
+                    <div id="t12-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t12-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t12-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab13" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Audience Personas</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Product/Service Type</label><input type="text" id="t13-type"></div>
+                    <div class="input-group"><label>Industry</label><input type="text" id="t13-industry"></div>
+                    <div class="input-group"><label>Price Range</label><input type="text" id="t13-price"></div>
+                    <div class="input-group"><label>Geography</label><input type="text" id="t13-geo"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-persona', 'tab13')">Build Personas 👥</button>
+                    <div id="t13-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t13-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t13-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab14" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Ad Copy Generator</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Product/Service</label><input type="text" id="t14-product"></div>
+                    <div class="input-group"><label>Unique Selling Point (USP)</label><input type="text" id="t14-usp"></div>
+                    <div class="input-group"><label>Target Audience</label><input type="text" id="t14-audience"></div>
+                    <div class="input-group"><label>Platform</label><input type="text" id="t14-platform" placeholder="e.g., Google Ads, FB"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-ad', 'tab14')">Write Ads 📢</button>
+                    <div id="t14-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t14-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t14-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab15" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Hashtag Generator</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Brand Niche</label><input type="text" id="t15-niche"></div>
+                    <div class="input-group"><label>Post Topic</label><input type="text" id="t15-topic"></div>
+                    <div class="input-group"><label>Platform</label><input type="text" id="t15-platform"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t15-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-hashtags', 'tab15')">Get Hashtags #️⃣</button>
+                    <div id="t15-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t15-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t15-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab16" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Press Releases</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Announcement Type</label><input type="text" id="t16-type"></div>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t16-name"></div>
+                    <div class="input-group"><label>Key Details</label><textarea id="t16-details" rows="2"></textarea></div>
+                    <div class="input-group"><label>Founder Quote</label><input type="text" id="t16-quote"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-press-release', 'tab16')">Draft PR 📰</button>
+                    <div id="t16-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t16-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t16-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab17" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">SEO Metadata</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Page Topic</label><input type="text" id="t17-topic"></div>
+                    <div class="input-group"><label>Target Keyword</label><input type="text" id="t17-keyword"></div>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t17-name"></div>
+                    <div class="input-group"><label>Tone</label><input type="text" id="t17-tone"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-seo', 'tab17')">Optimize 🔍</button>
+                    <div id="t17-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t17-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t17-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab18" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">FAQ Generator</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Business Type</label><input type="text" id="t18-type"></div>
+                    <div class="input-group"><label>Product Description</label><textarea id="t18-desc" rows="2"></textarea></div>
+                    <div class="input-group"><label>Target Audience</label><input type="text" id="t18-audience"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-faq', 'tab18')">Generate FAQs❓</button>
+                    <div id="t18-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t18-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t18-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab19" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Brand Pitch</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Business Name</label><input type="text" id="t19-name"></div>
+                    <div class="input-group"><label>Problem Solved</label><input type="text" id="t19-problem"></div>
+                    <div class="input-group"><label>Solution</label><input type="text" id="t19-solution"></div>
+                    <div class="input-group"><label>Target Market</label><input type="text" id="t19-market"></div>
+                    <div class="input-group"><label>Revenue Model</label><input type="text" id="t19-revenue"></div>
+                    <div class="input-group"><label>Traction (Optional)</label><input type="text" id="t19-traction"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-pitch', 'tab19')">Create Pitch 💼</button>
+                    <div id="t19-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t19-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t19-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab20" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Text Summarizer</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Paste Long Document</label><textarea id="t20-doc" rows="5"></textarea></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/summarize', 'tab20')">Summarize 📑</button>
+                    <div id="t20-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t20-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t20-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab21" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Voice Input Transcription</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production (Recording)</h3>
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <button id="mic-btn" class="btn-primary pulse-hover" style="background: #ff4757; border-radius: 50%; width: 80px; height: 80px; font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto; border:none;">🎙️</button>
+                        <p style="margin-top: 1rem;" id="recording-status">Click to start browser dictation</p>
+                    </div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t21-output" class="output-box" contenteditable="true">Your transcribed voice notes will appear here...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t21-output')">📋 Copy Text</button></div>
+                </div>
+            </div>
+
+            <div id="tab22" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Consistency Checker</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Paste Content Pieces (Separate with a blank line)</label><textarea id="t22-content" rows="4" placeholder="Paste website bio...&#10;&#10;Paste social media post..."></textarea></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/check-consistency', 'tab22')">Check Alignment ⚖️</button>
+                    <div id="t22-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t22-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t22-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab23" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Business Cards</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Name</label><input type="text" id="t23-name"></div>
+                    <div class="input-group"><label>Role</label><input type="text" id="t23-role"></div>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t23-brand"></div>
+                    <div class="input-group"><label>Contact Info</label><input type="text" id="t23-contact"></div>
+                    <div class="input-group"><label>Tagline Preference</label><input type="text" id="t23-tagline"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/generate-bizcard', 'tab23')">Layout Cards 📇</button>
+                    <div id="t23-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t23-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t23-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+            <div id="tab24" class="tab-content">
+                <h2 class="section-title" style="margin-top:0;">Domain Check</h2>
+                <div class="stage-section"><h3 class="stage-label">🎬 Pre-Production</h3>
+                    <div class="input-group"><label>Brand Name</label><input type="text" id="t24-name"></div>
+                </div>
+                <div class="stage-section production-stage"><h3 class="stage-label">🎥 Production</h3>
+                    <button class="btn-primary generate-btn pulse-hover" onclick="generateContent('api/check-availability', 'tab24')">Check Availability 🌐</button>
+                    <div id="t24-loader" class="loader">🎞️</div>
+                </div>
+                <div class="stage-section"><h3 class="stage-label">🎞️ Post-Production</h3>
+                    <div id="t24-output" class="output-box" contenteditable="true">Output...</div>
+                    <div class="action-bar"><button class="btn-secondary" onclick="copyText('t24-output')">📋 Copy</button></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="toast">Notification text</div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
